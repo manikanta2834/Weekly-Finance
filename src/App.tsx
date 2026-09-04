@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   ChevronDown,
   Coins,
-  Database,
   FileSpreadsheet,
   Globe,
   Home,
@@ -30,7 +29,6 @@ import { BorrowerDetailModal } from './components/dashboard/BorrowerDetailModal'
 import { BorrowersTable } from './components/dashboard/BorrowersTable';
 import { DashboardStatsBar } from './components/dashboard/DashboardStatsBar';
 import { TodaysCollectionWidget } from './components/dashboard/TodaysCollectionWidget';
-import { DeploymentGuideModal } from './components/deployment/DeploymentGuideModal';
 import { LandingPage } from './components/landing/LandingPage';
 import {
   addBorrower,
@@ -86,9 +84,6 @@ export default function App() {
     editingBorrower,
     openAddLoanModal,
     closeAddLoanModal,
-    isDeployModalOpen,
-    openDeployModal,
-    closeDeployModal,
     isAuthModalOpen,
     openAuthModal,
     closeAuthModal,
@@ -218,8 +213,8 @@ export default function App() {
       )}
 
       {/* Main Top Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#020d0c]/95 border-b border-[#10332e] shadow-lg shadow-black/40 w-full overflow-hidden">
-        <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 h-14 sm:h-20 flex items-center justify-between gap-1.5 sm:gap-4">
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#020d0c]/95 border-b border-[#10332e] shadow-lg shadow-black/40 w-full">
+        <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 h-14 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Logo & Brand */}
           <button
@@ -231,10 +226,10 @@ export default function App() {
           </button>
 
           {/* Center Navigation Views (Desktop >= md) */}
-          <nav className="hidden md:flex items-center gap-1 bg-[#041513] p-1.5 rounded-2xl border border-[#10332e] text-xs">
+          <nav className="hidden lg:flex items-center gap-1 bg-[#041513] p-1.5 rounded-2xl border border-[#10332e] text-xs">
             <button
               onClick={() => navigateToView('landing')}
-              className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeView === 'landing'
                   ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 shadow-sm font-bold'
                   : 'text-[#8ba39e] hover:text-[#e0e7e6] hover:bg-[#0a2924]'
@@ -246,7 +241,7 @@ export default function App() {
 
             <button
               onClick={() => navigateToView('dashboard')}
-              className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeView === 'dashboard'
                   ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-950 shadow-sm font-bold'
                   : 'text-[#8ba39e] hover:text-[#e0e7e6] hover:bg-[#0a2924]'
@@ -258,7 +253,7 @@ export default function App() {
 
             <button
               onClick={() => navigateToView('calculator')}
-              className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeView === 'calculator'
                   ? 'bg-gradient-to-r from-amber-500 to-emerald-400 text-slate-950 shadow-sm font-bold'
                   : 'text-[#8ba39e] hover:text-[#e0e7e6] hover:bg-[#0a2924]'
@@ -270,31 +265,23 @@ export default function App() {
 
             <button
               onClick={() => navigateToView('login')}
-              className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeView === 'login'
                   ? 'bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 shadow-sm font-bold'
                   : 'text-[#8ba39e] hover:text-[#e0e7e6] hover:bg-[#0a2924]'
               }`}
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>{language === 'te' ? 'లాగిన్ (Login)' : 'Login'}</span>
-            </button>
-
-            <button
-              onClick={openDeployModal}
-              className="px-3.5 py-1.5 rounded-xl font-semibold text-emerald-400 hover:bg-[#0a2924] transition-all flex items-center gap-1.5 cursor-pointer"
-            >
-              <Database className="w-3.5 h-3.5" />
-              <span>SQL / Vercel</span>
+              <span>{language === 'te' ? 'లాగిన్' : 'Login'}</span>
             </button>
           </nav>
 
           {/* Right Action Icons & Controls */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Language Switcher Persistent Toggle */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#061d1a] border border-[#10332e] hover:border-emerald-500/50 text-[10px] sm:text-xs font-semibold text-[#e0e7e6] hover:text-amber-300 transition-all shadow-sm cursor-pointer"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#061d1a] border border-[#10332e] hover:border-emerald-500/50 text-[10px] sm:text-xs font-semibold text-[#e0e7e6] hover:text-amber-300 transition-all shadow-sm cursor-pointer whitespace-nowrap"
               title="Toggle English / తెలుగు"
             >
               <Globe className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 shrink-0" />
@@ -311,23 +298,23 @@ export default function App() {
             </button>
 
             {/* User Profile / Account Dropdown */}
-            <div className="relative" ref={userMenuRef}>
+            <div className="relative z-50" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-1 sm:gap-2 p-1 sm:px-3 sm:py-1.5 rounded-xl bg-[#061d1a] border border-[#10332e] hover:border-emerald-500/40 text-xs font-medium text-[#e0e7e6] hover:text-white transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-[#061d1a] border border-[#10332e] hover:border-emerald-500/40 text-xs font-medium text-[#e0e7e6] hover:text-white transition-all cursor-pointer whitespace-nowrap shadow-sm"
                 title="Account Settings"
               >
-                <div className="w-6 h-6 sm:w-6 sm:h-6 rounded-full bg-gradient-to-tr from-emerald-600 to-amber-400 text-slate-950 flex items-center justify-center font-black text-[11px] shadow-sm shrink-0">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-emerald-600 to-amber-400 text-slate-950 flex items-center justify-center font-black text-[11px] shadow-sm shrink-0">
                   {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                 </div>
-                <span className="hidden xl:inline max-w-[110px] truncate">{currentUser.name}</span>
-                <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8ba39e] hidden sm:block" />
+                <span className="hidden sm:inline max-w-[100px] md:max-w-[130px] truncate">{currentUser.name}</span>
+                <ChevronDown className={`w-3.5 h-3.5 text-[#8ba39e] transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180 text-emerald-400' : ''}`} />
               </button>
 
               {/* Dropdown Menu */}
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#061d1a] border border-[#10332e] shadow-2xl p-3 z-50 space-y-2 animate-fade-in">
-                  <div className="p-2 rounded-xl bg-[#041513] border border-[#10332e]">
+                <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-[#061d1a] border border-[#10332e] shadow-2xl p-3 z-50 space-y-2 animate-fade-in ring-1 ring-emerald-500/20 backdrop-blur-xl">
+                  <div className="p-2.5 rounded-xl bg-[#041513] border border-[#10332e]">
                     <div className="text-xs font-bold text-[#e0e7e6] truncate">{currentUser.name}</div>
                     <div className="text-[11px] text-[#8ba39e] truncate">{currentUser.email}</div>
                     {currentUser.business_name && (
@@ -527,14 +514,6 @@ export default function App() {
           <LogIn className="w-4 h-4 mb-0.5 shrink-0" />
           <span className="text-[10px] truncate">Login</span>
         </button>
-
-        <button
-          onClick={openDeployModal}
-          className="flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl text-emerald-400 hover:text-emerald-300 transition-all cursor-pointer min-w-0"
-        >
-          <Database className="w-4 h-4 mb-0.5 shrink-0" />
-          <span className="text-[10px] truncate">SQL/Vercel</span>
-        </button>
       </nav>
 
       {/* 3D Flippable Borrower Detail Modal */}
@@ -599,11 +578,6 @@ export default function App() {
             closeAuthModal();
           }}
         />
-      )}
-
-      {/* Deployment & SQL Modal */}
-      {isDeployModalOpen && (
-        <DeploymentGuideModal onClose={closeDeployModal} />
       )}
     </div>
   );
