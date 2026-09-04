@@ -1,0 +1,6 @@
+{
+  "name": "Vaddi Vault",
+  "description": "Weekly Collection Tracker & Interest Calculator with 21-week collection grid, Telugu & English bilingual UI, and visual analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
