@@ -131,9 +131,9 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
   };
 
   return (
-    <div className="bg-[#061d1a]/95 border border-[#10332e] rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl">
+    <div className="bg-[#061d1a]/95 border border-[#10332e] rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl">
       {/* Top Filter Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-[#8ba39e] absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -142,7 +142,7 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={t('dashboard.searchPlaceholder')}
-            className="w-full bg-[#041513] border border-[#10332e] rounded-2xl pl-10 pr-4 py-2.5 text-xs text-[#e0e7e6] placeholder:text-[#8ba39e] focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="w-full bg-[#041513] border border-[#10332e] rounded-xl sm:rounded-2xl pl-10 pr-4 py-2 sm:py-2.5 text-xs text-[#e0e7e6] placeholder:text-[#8ba39e] focus:outline-none focus:ring-2 focus:ring-emerald-400"
           />
           {searchTerm && (
             <button
@@ -156,10 +156,10 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
 
         {/* Filter Pills & Actions */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center bg-[#041513] p-1 rounded-2xl border border-[#10332e] text-xs">
+          <div className="flex items-center bg-[#041513] p-1 rounded-xl sm:rounded-2xl border border-[#10332e] text-xs">
             <button
               onClick={() => setFilterType('all')}
-              className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl font-semibold transition-all cursor-pointer ${
                 filterType === 'all'
                   ? 'bg-amber-500 text-slate-950 shadow-sm font-bold'
                   : 'text-[#8ba39e] hover:text-[#e0e7e6]'
@@ -170,7 +170,7 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
 
             <button
               onClick={() => setFilterType('active')}
-              className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl font-semibold transition-all cursor-pointer ${
                 filterType === 'active'
                   ? 'bg-emerald-500 text-slate-950 shadow-sm font-bold'
                   : 'text-[#8ba39e] hover:text-[#e0e7e6]'
@@ -181,7 +181,7 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
 
             <button
               onClick={() => setFilterType('completed')}
-              className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl font-semibold transition-all cursor-pointer ${
                 filterType === 'completed'
                   ? 'bg-emerald-500 text-slate-950 shadow-sm font-bold'
                   : 'text-[#8ba39e] hover:text-[#e0e7e6]'
@@ -194,7 +194,7 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
           {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="px-3.5 py-2 rounded-2xl bg-[#0a2924] hover:bg-[#10332e] border border-[#10332e] text-xs font-semibold text-[#e0e7e6] flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-[#0a2924] hover:bg-[#10332e] border border-[#10332e] text-xs font-semibold text-[#e0e7e6] flex items-center gap-1.5 transition-all cursor-pointer"
             title="Download CSV Report"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
@@ -204,7 +204,7 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
           {/* Add Loan Button */}
           <button
             onClick={onAddNewLoan}
-            className="px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all cursor-pointer"
+            className="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4 text-slate-950" />
             <span>{t('nav.addLoan')}</span>

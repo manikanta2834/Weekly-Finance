@@ -9,8 +9,7 @@ import {
   Layers,
   RotateCcw,
   Sparkles,
-  TrendingUp,
-  Vault
+  TrendingUp
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { calculateLoan, formatINR } from '../../lib/calculator';

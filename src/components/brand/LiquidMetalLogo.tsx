@@ -234,16 +234,16 @@ export const LiquidMetalLogo: React.FC<LiquidMetalLogoProps> = ({
       </div>
 
       {showText && (
-        <div className="flex flex-col leading-tight whitespace-nowrap">
+        <div className="flex flex-col leading-tight whitespace-nowrap overflow-hidden">
           <div className="flex items-center gap-1.5 whitespace-nowrap">
-            <span className={`whitespace-nowrap font-extrabold tracking-tight bg-gradient-to-r from-amber-100 via-emerald-200 to-amber-400 bg-clip-text text-transparent font-['Plus_Jakarta_Sans'] ${currentSize.text}`}>
+            <span className={`whitespace-nowrap font-extrabold tracking-tight bg-gradient-to-r from-amber-100 via-emerald-200 to-amber-400 bg-clip-text text-transparent font-['Plus_Jakarta_Sans'] text-base sm:${currentSize.text}`}>
               Vaddi Vault
             </span>
-            <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-emerald-950/90 border border-emerald-500/40 text-emerald-400 shrink-0">
+            <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-1 sm:px-1.5 py-0.5 rounded bg-emerald-950/90 border border-emerald-500/40 text-emerald-400 shrink-0">
               వడ్డీ
             </span>
           </div>
-          <span className={`text-[#8ba39e] font-medium whitespace-nowrap ${currentSize.sub}`}>
+          <span className={`text-[#8ba39e] font-medium whitespace-nowrap hidden sm:block ${currentSize.sub}`}>
             21-Week Collection Ledger
           </span>
         </div>

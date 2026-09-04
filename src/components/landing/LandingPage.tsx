@@ -5,12 +5,12 @@ import {
   CheckCircle2,
   FileSpreadsheet,
   Globe,
+  Landmark,
   Layers,
   PhoneCall,
   Sparkles,
   TrendingUp,
   Users,
-  Vault,
   Zap
 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -96,7 +96,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 onClick={onOpenDashboard}
                 className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 font-bold text-base shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2.5 cursor-pointer"
               >
-                <Vault className="w-5 h-5 text-slate-950" />
+                <Landmark className="w-5 h-5 text-slate-950" />
                 <span>{t('landing.exploreDashboard')}</span>
                 <ArrowRight className="w-4 h-4 text-slate-950" />
               </button>
@@ -371,7 +371,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 onClick={onOpenDashboard}
                 className="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-400 to-amber-400 text-slate-950 font-extrabold text-base shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 cursor-pointer"
               >
-                <Vault className="w-5 h-5 text-slate-950" />
+                <Landmark className="w-5 h-5 text-slate-950" />
                 <span>{t('landing.exploreDashboard')}</span>
                 <ArrowRight className="w-5 h-5 text-slate-950" />
               </button>
