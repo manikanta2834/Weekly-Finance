@@ -16,7 +16,12 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useI18n } from '../../lib/i18nContext';
-import { getCurrentUser, setCurrentUser } from '../../lib/storage';
+import {
+  ADMIN_MASTER_USER,
+  getRegisteredUsers,
+  registerNewUser,
+  setCurrentUser,
+} from '../../lib/storage';
 import { UserProfile } from '../../types';
 import { LiquidMetalLogo } from '../brand/LiquidMetalLogo';
 
@@ -47,8 +52,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Admin Master Credentials
-  const ADMIN_EMAIL = 'manikanta17834@gmail.com';
-  const ADMIN_PHONE = '7036929246';
+  const ADMIN_EMAIL = ADMIN_MASTER_USER.email;
+  const ADMIN_PHONE = ADMIN_MASTER_USER.phone || '7036929246';
   const ADMIN_PASS = 'Mani234&';
 
   // Quick 1-click Demo / Admin Login
@@ -56,17 +61,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     setLoading(true);
     setErrorMsg(null);
     setTimeout(() => {
-      const adminUser: UserProfile = {
-        id: 'admin-manikanta',
-        email: ADMIN_EMAIL,
-        name: 'Manikanta (మాణికంఠ)',
-        business_name: 'Manikanta Weekly Finance',
-        phone: ADMIN_PHONE,
-        is_demo: false,
-      };
-      setCurrentUser(adminUser);
+      setCurrentUser(ADMIN_MASTER_USER);
       setLoading(false);
-      onLoginSuccess(adminUser);
+      onLoginSuccess(ADMIN_MASTER_USER);
     }, 450);
   };
 
@@ -74,7 +71,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     setIdentifier(ADMIN_EMAIL);
     setPassword(ADMIN_PASS);
     setErrorMsg(null);
-    setSuccessMsg(language === 'te' ? 'అడ్మిన్ వివరాలు నింపబడ్డాయి! లాగిన్ క్లిక్ చేయండి.' : 'Admin credentials loaded! Click Sign In to proceed.');
+    setSuccessMsg(
+      language === 'te'
+        ? 'అడ్మిన్ వివరాలు నింపబడ్డాయి! లాగిన్ క్లిక్ చేయండి.'
+        : 'Admin credentials loaded! Click Sign In to proceed.'
+    );
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -109,14 +110,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           return;
         }
 
-        const newUser: UserProfile = {
-          id: `u-${Date.now()}`,
-          email: identifier.includes('@') ? identifier.trim() : `${identifier.trim()}@vaddivault.com`,
+        const newUser = registerNewUser({
           name: fullName.trim(),
-          business_name: businessName.trim() || 'Manikanta Weekly Finance',
-          phone: phone.trim() || identifier.trim(),
-          is_demo: false,
-        };
+          email: identifier.includes('@') ? identifier.trim() : `${identifier.trim().replace(/\D/g, '')}@vaddivault.com`,
+          business_name: businessName.trim() || `${fullName.trim()}'s Finance Ledger`,
+          phone: phone.trim() || (!identifier.includes('@') ? identifier.trim() : ''),
+          password: password,
+        });
 
         setCurrentUser(newUser);
         onLoginSuccess(newUser);
@@ -134,35 +134,54 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
       // Check if logging in with designated Admin Credentials
       if (
-        (trimmedIdent === ADMIN_EMAIL.toLowerCase() || cleanPhone === ADMIN_PHONE) &&
+        (trimmedIdent === ADMIN_EMAIL.toLowerCase() || (cleanPhone && cleanPhone === ADMIN_PHONE)) &&
         password === ADMIN_PASS
       ) {
-        const adminUser: UserProfile = {
-          id: 'admin-manikanta',
-          email: ADMIN_EMAIL,
-          name: 'Manikanta (మాణికంఠ)',
-          business_name: 'Manikanta Weekly Finance',
-          phone: ADMIN_PHONE,
-          is_demo: false,
-        };
-        setCurrentUser(adminUser);
-        onLoginSuccess(adminUser);
+        setCurrentUser(ADMIN_MASTER_USER);
+        onLoginSuccess(ADMIN_MASTER_USER);
         return;
       }
 
-      // Allow any valid password for general lenders or match existing user
-      const existing = getCurrentUser();
-      const user: UserProfile = {
-        id: existing.id || `u-${Date.now()}`,
-        email: identifier.includes('@') ? identifier.trim() : (trimmedIdent === ADMIN_PHONE ? ADMIN_EMAIL : existing.email),
-        name: existing.name || identifier.split('@')[0] || 'Manikanta',
-        business_name: existing.business_name || 'Manikanta Weekly Finance',
-        phone: !identifier.includes('@') ? identifier.trim() : ADMIN_PHONE,
-        is_demo: false,
-      };
+      // Check registered users in persistent storage registry
+      const users = getRegisteredUsers();
+      const matched = users.find(
+        (u) =>
+          u.email.toLowerCase() === trimmedIdent ||
+          (cleanPhone && u.phone && u.phone.replace(/\D/g, '') === cleanPhone)
+      );
 
-      setCurrentUser(user);
-      onLoginSuccess(user);
+      if (matched) {
+        if (matched.password && matched.password !== password) {
+          setErrorMsg(
+            language === 'te'
+              ? 'తప్పు పాస్‌వర్డ్. దయచేసి మళ్ళీ ప్రయత్నించండి.'
+              : 'Incorrect password for this account. Please try again.'
+          );
+          return;
+        }
+        const userProfile: UserProfile = {
+          id: matched.id,
+          email: matched.email,
+          name: matched.name,
+          business_name: matched.business_name,
+          phone: matched.phone,
+          is_demo: false,
+        };
+        setCurrentUser(userProfile);
+        onLoginSuccess(userProfile);
+        return;
+      }
+
+      // If user is signing in with a new email/phone and valid password, create their account seamlessly
+      const autoUser = registerNewUser({
+        name: identifier.includes('@') ? identifier.split('@')[0] : `Lender ${cleanPhone.slice(-4) || 'Account'}`,
+        email: identifier.includes('@') ? identifier.trim() : `${cleanPhone}@vaddivault.com`,
+        phone: cleanPhone || '',
+        password: password,
+      });
+
+      setCurrentUser(autoUser);
+      onLoginSuccess(autoUser);
     }, 500);
   };
 

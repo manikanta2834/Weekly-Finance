@@ -10,6 +10,12 @@ import {
   X
 } from 'lucide-react';
 import React, { useState } from 'react';
+import {
+  ADMIN_MASTER_USER,
+  getRegisteredUsers,
+  registerNewUser,
+  setCurrentUser,
+} from '../../lib/storage';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { UserProfile } from '../../types';
 import { LiquidMetalLogo } from '../brand/LiquidMetalLogo';
@@ -35,15 +41,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const handleDemoLogin = () => {
-    const adminUser: UserProfile = {
-      id: 'admin-manikanta',
-      email: 'manikanta17834@gmail.com',
-      name: 'Manikanta (మాణికంఠ)',
-      business_name: 'Manikanta Weekly Finance',
-      phone: '7036929246',
-      is_demo: false,
-    };
-    onLoginSuccess(adminUser);
+    setCurrentUser(ADMIN_MASTER_USER);
+    onLoginSuccess(ADMIN_MASTER_USER);
     onClose();
   };
 
@@ -69,13 +68,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           });
           if (error) throw error;
           if (data.user) {
-            onLoginSuccess({
-              id: data.user.id,
-              email: data.user.email || email,
+            const user = registerNewUser({
               name: name || 'Lender',
+              email: data.user.email || email,
               business_name: businessName,
-              is_demo: false,
+              password,
             });
+            setCurrentUser(user);
+            onLoginSuccess(user);
             onClose();
           }
         } else if (mode === 'login') {
@@ -85,13 +85,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           });
           if (error) throw error;
           if (data.user) {
-            onLoginSuccess({
+            const user: UserProfile = {
               id: data.user.id,
               email: data.user.email || email,
               name: data.user.user_metadata?.full_name || 'Lender',
               business_name: data.user.user_metadata?.business_name,
               is_demo: false,
-            });
+            };
+            setCurrentUser(user);
+            onLoginSuccess(user);
             onClose();
           }
         } else if (mode === 'forgot') {
@@ -108,16 +110,59 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       // Local fallback mode
       setTimeout(() => {
         setLoading(false);
-        const user: UserProfile = {
-          id: `usr-${Date.now()}`,
-          email,
-          name: name || email.split('@')[0] || 'Lender',
-          business_name: businessName || 'Weekly Finance Vault',
-          is_demo: true,
-        };
-        onLoginSuccess(user);
-        onClose();
-      }, 500);
+        if (mode === 'signup') {
+          const user = registerNewUser({
+            name: name || email.split('@')[0] || 'Lender',
+            email: email,
+            business_name: businessName || `${name || 'Lender'}'s Finance Ledger`,
+            password: password,
+          });
+          setCurrentUser(user);
+          onLoginSuccess(user);
+          onClose();
+        } else if (mode === 'login') {
+          const trimmed = email.trim().toLowerCase();
+          if (trimmed === ADMIN_MASTER_USER.email.toLowerCase() && password === 'Mani234&') {
+            setCurrentUser(ADMIN_MASTER_USER);
+            onLoginSuccess(ADMIN_MASTER_USER);
+            onClose();
+            return;
+          }
+
+          const users = getRegisteredUsers();
+          const matched = users.find((u) => u.email.toLowerCase() === trimmed);
+          if (matched) {
+            if (matched.password && matched.password !== password) {
+              setErrorMsg('Invalid password for this account.');
+              return;
+            }
+            const profile: UserProfile = {
+              id: matched.id,
+              email: matched.email,
+              name: matched.name,
+              business_name: matched.business_name,
+              phone: matched.phone,
+              is_demo: false,
+            };
+            setCurrentUser(profile);
+            onLoginSuccess(profile);
+            onClose();
+            return;
+          }
+
+          const user = registerNewUser({
+            name: name || email.split('@')[0] || 'Lender',
+            email: email,
+            business_name: businessName || `${name || 'Lender'}'s Finance Ledger`,
+            password: password,
+          });
+          setCurrentUser(user);
+          onLoginSuccess(user);
+          onClose();
+        } else if (mode === 'forgot') {
+          setSuccessMsg('Password reset instructions sent to your email.');
+        }
+      }, 400);
     }
   };
 

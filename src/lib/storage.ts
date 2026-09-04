@@ -2,11 +2,37 @@ import { Borrower, DashboardStats, PaymentStatus, UserProfile, WeeklyPayment } f
 import { calculateLoan, generateWeeklySchedule, getBorrowerProgress } from './calculator';
 import { isSupabaseConfigured, supabase } from './supabase';
 
-const STORAGE_KEY = 'vaddi_vault_borrowers_v1';
 const USER_KEY = 'vaddi_vault_current_user_v1';
+const USERS_REGISTRY_KEY = 'vaddi_vault_users_registry_v1';
+const LEGACY_STORAGE_KEY = 'vaddi_vault_borrowers_v1';
+
+export const ADMIN_MASTER_USER: UserProfile = {
+  id: 'admin-manikanta',
+  email: 'manikanta17834@gmail.com',
+  name: 'Manikanta (మాణికంఠ)',
+  business_name: 'Manikanta Weekly Finance',
+  phone: '7036929246',
+  is_demo: false,
+};
+
+export interface RegisteredUserRecord {
+  id: string;
+  email: string;
+  name: string;
+  business_name: string;
+  phone: string;
+  password?: string;
+  is_demo?: boolean;
+  created_at: string;
+}
+
+// Helper to get the isolated storage key for a user's borrowers
+export function getBorrowersStorageKey(userId: string): string {
+  return `vaddi_vault_borrowers_${userId}`;
+}
 
 // Seed initial realistic data demonstrating the exact ₹10,000 -> ₹12,600 in 21 weeks formula
-function getInitialSeedBorrowers(userId: string): Borrower[] {
+export function getInitialSeedBorrowers(userId: string): Borrower[] {
   const today = new Date();
   
   // Helper to format ISO date minus N weeks
@@ -16,7 +42,7 @@ function getInitialSeedBorrowers(userId: string): Borrower[] {
     return d.toISOString().split('T')[0];
   };
 
-  const b1Id = 'b-ravi-kumar-101';
+  const b1Id = `b-${userId.replace(/[^a-zA-Z0-9]/g, '')}-ravi-101`;
   const b1Calc = calculateLoan(10000, 600, 21);
   const b1Schedule = generateWeeklySchedule(b1Id, getPastDate(8), 600, 21);
   // Mark first 7 weeks paid, week 8 pending
@@ -30,7 +56,7 @@ function getInitialSeedBorrowers(userId: string): Borrower[] {
     }
   });
 
-  const b2Id = 'b-venkat-rao-102';
+  const b2Id = `b-${userId.replace(/[^a-zA-Z0-9]/g, '')}-venkat-102`;
   const b2Calc = calculateLoan(10000, 600, 21);
   const b2Schedule = generateWeeklySchedule(b2Id, getPastDate(22), 600, 21);
   // Mark all 21 weeks paid (Fully Paid borrower)
@@ -40,7 +66,7 @@ function getInitialSeedBorrowers(userId: string): Borrower[] {
     p.paid_amount = 600;
   });
 
-  const b3Id = 'b-lakshmi-devi-103';
+  const b3Id = `b-${userId.replace(/[^a-zA-Z0-9]/g, '')}-lakshmi-103`;
   const b3Calc = calculateLoan(20000, 1200, 21);
   const b3Schedule = generateWeeklySchedule(b3Id, getPastDate(4), 1200, 21);
   b3Schedule.forEach((p, idx) => {
@@ -56,7 +82,7 @@ function getInitialSeedBorrowers(userId: string): Borrower[] {
     }
   });
 
-  const b4Id = 'b-suresh-reddy-104';
+  const b4Id = `b-${userId.replace(/[^a-zA-Z0-9]/g, '')}-suresh-104`;
   const b4Calc = calculateLoan(10000, 600, 21);
   const b4Schedule = generateWeeklySchedule(b4Id, getPastDate(12), 600, 21);
   b4Schedule.forEach((p, idx) => {
@@ -72,7 +98,7 @@ function getInitialSeedBorrowers(userId: string): Borrower[] {
     }
   });
 
-  const b5Id = 'b-anjaneyulu-105';
+  const b5Id = `b-${userId.replace(/[^a-zA-Z0-9]/g, '')}-anjaneyulu-105`;
   const b5Calc = calculateLoan(50000, 3000, 20);
   const b5Schedule = generateWeeklySchedule(b5Id, getPastDate(2), 3000, 20);
   b5Schedule.forEach((p, idx) => {
@@ -172,40 +198,125 @@ function getInitialSeedBorrowers(userId: string): Borrower[] {
   ];
 }
 
-export function getCurrentUser(): UserProfile {
-  if (typeof window === 'undefined') {
-    return {
-      id: 'admin-manikanta',
-      email: 'manikanta17834@gmail.com',
-      name: 'Manikanta (మాణికంఠ)',
-      business_name: 'Manikanta Weekly Finance',
-      phone: '7036929246',
+// User Registry Management
+export function getRegisteredUsers(): RegisteredUserRecord[] {
+  if (typeof window === 'undefined') return [];
+  const raw = localStorage.getItem(USERS_REGISTRY_KEY);
+  let users: RegisteredUserRecord[] = [];
+  if (raw) {
+    try {
+      users = JSON.parse(raw);
+    } catch {
+      users = [];
+    }
+  }
+
+  // Ensure Admin is always in the registry
+  const hasAdmin = users.some(u => u.id === 'admin-manikanta' || u.email === ADMIN_MASTER_USER.email);
+  if (!hasAdmin) {
+    users.unshift({
+      id: ADMIN_MASTER_USER.id,
+      email: ADMIN_MASTER_USER.email,
+      name: ADMIN_MASTER_USER.name,
+      business_name: ADMIN_MASTER_USER.business_name || 'Manikanta Weekly Finance',
+      phone: ADMIN_MASTER_USER.phone || '7036929246',
+      password: 'Mani234&',
+      is_demo: false,
+      created_at: new Date().toISOString(),
+    });
+    localStorage.setItem(USERS_REGISTRY_KEY, JSON.stringify(users));
+  }
+
+  return users;
+}
+
+export function registerNewUser(data: {
+  name: string;
+  email: string;
+  business_name?: string;
+  phone?: string;
+  password?: string;
+}): UserProfile {
+  const users = getRegisteredUsers();
+  const cleanEmail = data.email.trim().toLowerCase();
+  const cleanPhone = (data.phone || '').trim();
+  const cleanName = data.name.trim();
+  const cleanBusiness = (data.business_name || '').trim() || `${cleanName}'s Finance Ledger`;
+
+  // Check if already registered
+  const existing = users.find(
+    u => u.email.toLowerCase() === cleanEmail || (cleanPhone && u.phone === cleanPhone)
+  );
+
+  if (existing) {
+    // Update existing user profile
+    existing.name = cleanName;
+    existing.business_name = cleanBusiness;
+    if (data.password) existing.password = data.password;
+    if (cleanPhone) existing.phone = cleanPhone;
+    localStorage.setItem(USERS_REGISTRY_KEY, JSON.stringify(users));
+
+    const profile: UserProfile = {
+      id: existing.id,
+      email: existing.email,
+      name: existing.name,
+      business_name: existing.business_name,
+      phone: existing.phone,
       is_demo: false,
     };
+    setCurrentUser(profile);
+    return profile;
+  }
+
+  // Create new unique user ID
+  const newUserId = `u-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  const newUserRecord: RegisteredUserRecord = {
+    id: newUserId,
+    email: cleanEmail,
+    name: cleanName,
+    business_name: cleanBusiness,
+    phone: cleanPhone,
+    password: data.password || '',
+    is_demo: false,
+    created_at: new Date().toISOString(),
+  };
+
+  users.push(newUserRecord);
+  localStorage.setItem(USERS_REGISTRY_KEY, JSON.stringify(users));
+
+  // Initialize a fresh, empty borrower ledger for the new user
+  localStorage.setItem(getBorrowersStorageKey(newUserId), JSON.stringify([]));
+
+  const profile: UserProfile = {
+    id: newUserRecord.id,
+    email: newUserRecord.email,
+    name: newUserRecord.name,
+    business_name: newUserRecord.business_name,
+    phone: newUserRecord.phone,
+    is_demo: false,
+  };
+
+  setCurrentUser(profile);
+  return profile;
+}
+
+export function getCurrentUser(): UserProfile {
+  if (typeof window === 'undefined') {
+    return ADMIN_MASTER_USER;
   }
   const raw = localStorage.getItem(USER_KEY);
   if (raw) {
     try {
-      const parsed = JSON.parse(raw);
-      if (parsed.id === 'admin-manikanta' && parsed.business_name !== 'Manikanta Weekly Finance') {
-        parsed.business_name = 'Manikanta Weekly Finance';
-        localStorage.setItem(USER_KEY, JSON.stringify(parsed));
-      }
+      const parsed = JSON.parse(raw) as UserProfile;
       return parsed;
     } catch {
       // fallback
     }
   }
-  const defaultUser: UserProfile = {
-    id: 'admin-manikanta',
-    email: 'manikanta17834@gmail.com',
-    name: 'Manikanta (మాణికంఠ)',
-    business_name: 'Manikanta Weekly Finance',
-    phone: '7036929246',
-    is_demo: false,
-  };
-  localStorage.setItem(USER_KEY, JSON.stringify(defaultUser));
-  return defaultUser;
+
+  // Default to Admin Master User
+  localStorage.setItem(USER_KEY, JSON.stringify(ADMIN_MASTER_USER));
+  return ADMIN_MASTER_USER;
 }
 
 export function setCurrentUser(user: UserProfile | null) {
@@ -217,30 +328,64 @@ export function setCurrentUser(user: UserProfile | null) {
   }
 }
 
-export function getBorrowers(): Borrower[] {
+export function getBorrowers(userId?: string): Borrower[] {
   if (typeof window === 'undefined') return [];
   const user = getCurrentUser();
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) {
+  const targetUserId = userId || user.id;
+  const storageKey = getBorrowersStorageKey(targetUserId);
+
+  // Check user-scoped storage
+  const raw = localStorage.getItem(storageKey);
+  if (raw !== null) {
     try {
       const parsed = JSON.parse(raw) as Borrower[];
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         return parsed;
       }
     } catch (e) {
-      console.error('Failed to parse stored borrowers', e);
+      console.error('Failed to parse stored borrowers for user', targetUserId, e);
     }
   }
 
-  // Seed default dataset
-  const seeds = getInitialSeedBorrowers(user.id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
-  return seeds;
+  // Legacy data migration for admin:
+  if (targetUserId === 'admin-manikanta') {
+    const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (legacyRaw) {
+      try {
+        const legacyParsed = JSON.parse(legacyRaw) as Borrower[];
+        if (Array.isArray(legacyParsed) && legacyParsed.length > 0) {
+          localStorage.setItem(storageKey, JSON.stringify(legacyParsed));
+          return legacyParsed;
+        }
+      } catch {
+        // continue
+      }
+    }
+
+    // Seed default dataset for admin
+    const seeds = getInitialSeedBorrowers(targetUserId);
+    localStorage.setItem(storageKey, JSON.stringify(seeds));
+    return seeds;
+  }
+
+  // For any newly registered user, their personal ledger starts completely clean (0 borrowers)
+  const emptyList: Borrower[] = [];
+  localStorage.setItem(storageKey, JSON.stringify(emptyList));
+  return emptyList;
 }
 
-export function saveBorrowers(borrowers: Borrower[]) {
+export function saveBorrowers(borrowers: Borrower[], userId?: string) {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(borrowers));
+  const targetUserId = userId || getCurrentUser().id;
+  const storageKey = getBorrowersStorageKey(targetUserId);
+  localStorage.setItem(storageKey, JSON.stringify(borrowers));
+}
+
+export function loadSampleDataForUser(userId?: string): Borrower[] {
+  const targetUserId = userId || getCurrentUser().id;
+  const seeds = getInitialSeedBorrowers(targetUserId);
+  saveBorrowers(seeds, targetUserId);
+  return seeds;
 }
 
 export function addBorrower(data: {
@@ -276,9 +421,9 @@ export function addBorrower(data: {
     payments: schedule,
   };
 
-  const list = getBorrowers();
+  const list = getBorrowers(user.id);
   const updated = [newBorrower, ...list];
-  saveBorrowers(updated);
+  saveBorrowers(updated, user.id);
 
   // Background sync if Supabase is active
   if (isSupabaseConfigured && supabase) {
@@ -302,7 +447,8 @@ export function addBorrower(data: {
 }
 
 export function updateBorrower(borrowerId: string, updates: Partial<Borrower>): Borrower | null {
-  const list = getBorrowers();
+  const user = getCurrentUser();
+  const list = getBorrowers(user.id);
   const idx = list.findIndex((b) => b.id === borrowerId);
   if (idx === -1) return null;
 
@@ -354,15 +500,16 @@ export function updateBorrower(borrowerId: string, updates: Partial<Borrower>): 
   };
 
   list[idx] = updatedItem;
-  saveBorrowers(list);
+  saveBorrowers(list, user.id);
   return updatedItem;
 }
 
 export function deleteBorrower(borrowerId: string): boolean {
-  const list = getBorrowers();
+  const user = getCurrentUser();
+  const list = getBorrowers(user.id);
   const filtered = list.filter((b) => b.id !== borrowerId);
   if (filtered.length === list.length) return false;
-  saveBorrowers(filtered);
+  saveBorrowers(filtered, user.id);
   return true;
 }
 
@@ -374,7 +521,8 @@ export function updateWeeklyPayment(
   paidAmount?: number | null,
   notes?: string
 ): { borrower: Borrower; payment: WeeklyPayment } | null {
-  const list = getBorrowers();
+  const user = getCurrentUser();
+  const list = getBorrowers(user.id);
   const bIndex = list.findIndex((b) => b.id === borrowerId);
   if (bIndex === -1) return null;
 
@@ -428,7 +576,7 @@ export function updateWeeklyPayment(
   };
 
   list[bIndex] = updatedBorrower;
-  saveBorrowers(list);
+  saveBorrowers(list, user.id);
 
   return { borrower: updatedBorrower, payment: targetPayment };
 }
@@ -494,9 +642,9 @@ export function calculateDashboardStats(borrowers: Borrower[]): DashboardStats {
   };
 }
 
-export function resetToSeedData(): Borrower[] {
-  const user = getCurrentUser();
-  const seeds = getInitialSeedBorrowers(user.id);
-  saveBorrowers(seeds);
+export function resetToSeedData(userId?: string): Borrower[] {
+  const targetId = userId || getCurrentUser().id;
+  const seeds = getInitialSeedBorrowers(targetId);
+  saveBorrowers(seeds, targetId);
   return seeds;
 }

@@ -38,6 +38,7 @@ import {
   deleteBorrower,
   getBorrowers,
   getCurrentUser,
+  loadSampleDataForUser,
   resetToSeedData,
   setCurrentUser,
   updateBorrower,
@@ -67,7 +68,12 @@ export default function App() {
   }, []);
 
   // Data state
-  const [borrowers, setBorrowers] = useState<Borrower[]>(() => getBorrowers());
+  const [borrowers, setBorrowers] = useState<Borrower[]>(() => getBorrowers(currentUser?.id));
+
+  // Sync data refresh when user changes
+  useEffect(() => {
+    setBorrowers(getBorrowers(currentUser.id));
+  }, [currentUser.id]);
 
   // URL Hash & History Navigation Router (Handles phone physical/gesture back button)
   const {
@@ -107,8 +113,14 @@ export default function App() {
 
   // Sync data refresh
   const refreshData = () => {
-    const list = getBorrowers();
+    const list = getBorrowers(currentUser.id);
     setBorrowers(list);
+  };
+
+  const handleLoadSampleData = () => {
+    const samples = loadSampleDataForUser(currentUser.id);
+    setBorrowers(samples);
+    showToast(language === 'te' ? 'నమూనా లెడ్జర్ లోడ్ చేయబడింది' : 'Sample loan records loaded.');
   };
 
   // CRUD Handlers
@@ -196,18 +208,18 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020d0c] text-[#e0e7e6] flex flex-col font-['Plus_Jakarta_Sans']">
+    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#020d0c] text-[#e0e7e6] flex flex-col font-['Plus_Jakarta_Sans']">
       {/* Toast Notification Banner */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-gradient-to-r from-emerald-500 to-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-2xl shadow-2xl animate-fade-in flex items-center gap-2 text-xs border border-emerald-400/30">
-          <CheckCircle2 className="w-4 h-4 text-slate-950" />
+        <div className="fixed top-16 sm:top-20 right-3 sm:right-6 z-50 bg-gradient-to-r from-emerald-500 to-amber-400 text-slate-950 font-bold px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl shadow-2xl animate-fade-in flex items-center gap-2 text-xs border border-emerald-400/30">
+          <CheckCircle2 className="w-4 h-4 text-slate-950 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Main Top Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#020d0c]/95 border-b border-[#10332e] shadow-lg shadow-black/40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#020d0c]/95 border-b border-[#10332e] shadow-lg shadow-black/40 w-full overflow-hidden">
+        <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 h-14 sm:h-20 flex items-center justify-between gap-1.5 sm:gap-4">
           
           {/* Logo & Brand */}
           <button
@@ -278,11 +290,11 @@ export default function App() {
           </nav>
 
           {/* Right Action Icons & Controls */}
-          <div className="flex items-center gap-1.5 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Language Switcher Persistent Toggle */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#061d1a] border border-[#10332e] hover:border-emerald-500/50 text-[11px] sm:text-xs font-semibold text-[#e0e7e6] hover:text-amber-300 transition-all shadow-sm cursor-pointer"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#061d1a] border border-[#10332e] hover:border-emerald-500/50 text-[10px] sm:text-xs font-semibold text-[#e0e7e6] hover:text-amber-300 transition-all shadow-sm cursor-pointer"
               title="Toggle English / తెలుగు"
             >
               <Globe className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 shrink-0" />
@@ -302,10 +314,10 @@ export default function App() {
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-1.5 sm:gap-2 p-1 sm:px-3 sm:py-1.5 rounded-xl bg-[#061d1a] border border-[#10332e] hover:border-emerald-500/40 text-xs font-medium text-[#e0e7e6] hover:text-white transition-all cursor-pointer"
+                className="flex items-center gap-1 sm:gap-2 p-1 sm:px-3 sm:py-1.5 rounded-xl bg-[#061d1a] border border-[#10332e] hover:border-emerald-500/40 text-xs font-medium text-[#e0e7e6] hover:text-white transition-all cursor-pointer"
                 title="Account Settings"
               >
-                <div className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-gradient-to-tr from-emerald-600 to-amber-400 text-slate-950 flex items-center justify-center font-black text-xs sm:text-[11px] shadow-sm shrink-0">
+                <div className="w-6 h-6 sm:w-6 sm:h-6 rounded-full bg-gradient-to-tr from-emerald-600 to-amber-400 text-slate-950 flex items-center justify-center font-black text-[11px] shadow-sm shrink-0">
                   {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <span className="hidden xl:inline max-w-[110px] truncate">{currentUser.name}</span>
@@ -378,7 +390,8 @@ export default function App() {
                 setPrefilledTerms(null);
                 openAddLoanModal();
               }}
-              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+              className="p-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+              title="Add Loan"
             >
               <Plus className="w-4 h-4 text-slate-950" />
               <span className="hidden sm:inline">{t('nav.addLoan')}</span>
@@ -461,6 +474,7 @@ export default function App() {
                 setPrefilledTerms(null);
                 openAddLoanModal();
               }}
+              onLoadSampleData={handleLoadSampleData}
             />
           </main>
         )}
@@ -473,53 +487,53 @@ export default function App() {
       </div>
 
       {/* Native Mobile Bottom Navigation Bar (Fixed for phones < md) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#041513]/95 backdrop-blur-xl border-t border-[#10332e] py-1.5 px-2 flex items-center justify-around shadow-[0_-8px_25px_rgba(0,0,0,0.7)]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#041513]/95 backdrop-blur-xl border-t border-[#10332e] py-1 px-1 flex items-center justify-between shadow-[0_-8px_25px_rgba(0,0,0,0.7)] w-full max-w-full">
         <button
           onClick={() => navigateToView('landing')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+          className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer min-w-0 ${
             activeView === 'landing' ? 'text-amber-300 font-bold bg-[#0a2924]' : 'text-[#8ba39e] hover:text-[#e0e7e6]'
           }`}
         >
-          <Home className="w-4 h-4 mb-0.5" />
-          <span className="text-[10px]">{t('nav.landing')}</span>
+          <Home className="w-4 h-4 mb-0.5 shrink-0" />
+          <span className="text-[10px] truncate">{t('nav.landing')}</span>
         </button>
 
         <button
           onClick={() => navigateToView('dashboard')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+          className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer min-w-0 ${
             activeView === 'dashboard' ? 'text-emerald-300 font-bold bg-[#0a2924]' : 'text-[#8ba39e] hover:text-[#e0e7e6]'
           }`}
         >
-          <Landmark className="w-4 h-4 mb-0.5" />
-          <span className="text-[10px]">{t('nav.dashboard')}</span>
+          <Landmark className="w-4 h-4 mb-0.5 shrink-0" />
+          <span className="text-[10px] truncate">{t('nav.dashboard')}</span>
         </button>
 
         <button
           onClick={() => navigateToView('calculator')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+          className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer min-w-0 ${
             activeView === 'calculator' ? 'text-amber-300 font-bold bg-[#0a2924]' : 'text-[#8ba39e] hover:text-[#e0e7e6]'
           }`}
         >
-          <CalcIcon className="w-4 h-4 mb-0.5" />
-          <span className="text-[10px]">{t('nav.calculator')}</span>
+          <CalcIcon className="w-4 h-4 mb-0.5 shrink-0" />
+          <span className="text-[10px] truncate">{t('nav.calculator')}</span>
         </button>
 
         <button
           onClick={() => navigateToView('login')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+          className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer min-w-0 ${
             activeView === 'login' ? 'text-emerald-300 font-bold bg-[#0a2924]' : 'text-[#8ba39e] hover:text-[#e0e7e6]'
           }`}
         >
-          <LogIn className="w-4 h-4 mb-0.5" />
-          <span className="text-[10px]">Login</span>
+          <LogIn className="w-4 h-4 mb-0.5 shrink-0" />
+          <span className="text-[10px] truncate">Login</span>
         </button>
 
         <button
           onClick={openDeployModal}
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-emerald-400 hover:text-emerald-300 transition-all cursor-pointer"
+          className="flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl text-emerald-400 hover:text-emerald-300 transition-all cursor-pointer min-w-0"
         >
-          <Database className="w-4 h-4 mb-0.5" />
-          <span className="text-[10px]">SQL / Cloud</span>
+          <Database className="w-4 h-4 mb-0.5 shrink-0" />
+          <span className="text-[10px] truncate">SQL/Vercel</span>
         </button>
       </nav>
 
@@ -560,12 +574,12 @@ export default function App() {
       <ConfirmModal
         isOpen={isResetConfirmOpen}
         title="Reset Demo Data"
-        message="Are you sure you want to reset all borrowers and collection records back to the fresh demo dataset? Any custom loans created will be replaced with the sample borrowers."
+        message="Are you sure you want to reset your borrowers and collection records back to the fresh demo dataset? Any custom loans created will be replaced with the sample borrowers."
         confirmText="Reset to Sample Data"
         cancelText="Cancel"
         isDangerous={false}
         onConfirm={() => {
-          resetToSeedData();
+          resetToSeedData(currentUser.id);
           refreshData();
           closeBorrowerDetail();
           showToast('Reset to demo dataset successfully.');

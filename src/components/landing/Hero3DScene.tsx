@@ -29,8 +29,8 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = ({
     const container = mountRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 400;
-    const height = container.clientHeight || 450;
+    const width = container.clientWidth || Math.min(window.innerWidth - 32, 400);
+    const height = container.clientHeight || 420;
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -221,21 +221,21 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = ({
   const currentProfit = Math.max(0, totalCalculated - 10000);
 
   return (
-    <div className="relative w-full h-[420px] md:h-[480px] rounded-3xl bg-gradient-to-b from-slate-900/90 via-[#0d1520] to-emerald-950/40 border border-slate-800/80 backdrop-blur-xl overflow-hidden p-4 flex flex-col justify-between shadow-2xl shadow-emerald-950/30">
+    <div className="relative w-full max-w-full h-[380px] sm:h-[440px] md:h-[480px] rounded-2xl sm:rounded-3xl bg-gradient-to-b from-slate-900/90 via-[#0d1520] to-emerald-950/40 border border-slate-800/80 backdrop-blur-xl overflow-hidden p-3 sm:p-4 flex flex-col justify-between shadow-2xl shadow-emerald-950/30">
       {/* Top Floating Badge with Live Calculation */}
-      <div className="flex items-center justify-between z-10">
-        <div className="flex items-center gap-2 bg-slate-900/80 border border-amber-500/30 px-3 py-1.5 rounded-full backdrop-blur-md">
+      <div className="flex items-center justify-between z-10 gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-900/80 border border-amber-500/30 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full backdrop-blur-md">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs font-semibold text-amber-200">
+          <span className="text-[11px] sm:text-xs font-semibold text-amber-200">
             Week {currentWeek} of 21 Stack
           </span>
         </div>
 
         <button
           onClick={() => setIsRotating(!isRotating)}
-          className="text-[11px] font-medium text-slate-400 hover:text-slate-200 bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/60 transition-colors"
+          className="text-[10px] sm:text-[11px] font-medium text-slate-400 hover:text-slate-200 bg-slate-800/60 px-2 sm:px-2.5 py-1 rounded-lg border border-slate-700/60 transition-colors cursor-pointer shrink-0"
         >
-          {isRotating ? 'Pause Spin' : 'Resume Spin'}
+          {isRotating ? 'Pause Spin' : 'Resume'}
         </button>
       </div>
 
@@ -243,36 +243,36 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = ({
       <div ref={mountRef} className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Floating Target Milestones Overlay */}
-      <div className="absolute top-16 left-6 z-10 pointer-events-none">
-        <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-3 backdrop-blur-md shadow-lg">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold block">
-            Base Principal Lent
+      <div className="absolute top-14 sm:top-16 left-2.5 sm:left-6 z-10 pointer-events-none">
+        <div className="bg-slate-900/90 border border-emerald-500/30 rounded-xl sm:rounded-2xl p-2 sm:p-3 backdrop-blur-md shadow-lg">
+          <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase tracking-wider font-bold block">
+            Base Lent
           </span>
-          <span className="text-lg font-black text-slate-200">
+          <span className="text-sm sm:text-lg font-black text-slate-200">
             ₹10,000
           </span>
         </div>
       </div>
 
-      <div className="absolute top-16 right-6 z-10 pointer-events-none">
-        <div className="bg-slate-900/90 border border-amber-500/40 rounded-2xl p-3 backdrop-blur-md shadow-lg text-right">
-          <span className="text-[10px] text-amber-400 uppercase tracking-wider font-bold block">
-            Target 21-Wk Vault
+      <div className="absolute top-14 sm:top-16 right-2.5 sm:right-6 z-10 pointer-events-none">
+        <div className="bg-slate-900/90 border border-amber-500/40 rounded-xl sm:rounded-2xl p-2 sm:p-3 backdrop-blur-md shadow-lg text-right">
+          <span className="text-[9px] sm:text-[10px] text-amber-400 uppercase tracking-wider font-bold block">
+            21-Wk Vault
           </span>
-          <span className="text-xl font-black bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-200 bg-clip-text text-transparent">
+          <span className="text-sm sm:text-xl font-black bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-200 bg-clip-text text-transparent">
             ₹12,600
           </span>
         </div>
       </div>
 
       {/* Bottom Interactive Week Slider */}
-      <div className="relative z-10 bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 backdrop-blur-md">
-        <div className="flex items-center justify-between text-xs mb-2">
+      <div className="relative z-10 bg-slate-900/90 border border-slate-800 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 backdrop-blur-md">
+        <div className="flex items-center justify-between text-[11px] sm:text-xs mb-1.5 sm:mb-2">
           <span className="text-slate-300 font-medium">
-            Accumulated: <strong className="text-amber-300 font-bold">{formatINR(totalCalculated)}</strong>
+            Sum: <strong className="text-amber-300 font-bold">{formatINR(totalCalculated)}</strong>
           </span>
-          <span className="text-emerald-400 font-semibold">
-            {currentProfit > 0 ? `+${formatINR(currentProfit)} Interest Gain` : 'Principal Recovery Phase'}
+          <span className="text-emerald-400 font-semibold truncate ml-1">
+            {currentProfit > 0 ? `+${formatINR(currentProfit)} Profit` : 'Principal Phase'}
           </span>
         </div>
 
@@ -289,10 +289,10 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = ({
           className="w-full accent-amber-400 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
         />
 
-        <div className="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
-          <span>Wk 1 (₹600)</span>
-          <span>Wk 10 (₹6,000)</span>
-          <span>Wk 17 (₹10,200 Break-even)</span>
+        <div className="flex justify-between text-[9px] sm:text-[10px] text-slate-500 mt-1 font-mono">
+          <span>Wk 1</span>
+          <span className="hidden sm:inline">Wk 10</span>
+          <span>Wk 17 (Break-even)</span>
           <span className="text-amber-400 font-bold">Wk 21 (₹12,600)</span>
         </div>
       </div>

@@ -13,9 +13,11 @@ import {
   Plus,
   RotateCcw,
   Search,
+  Sparkles,
   Trash2,
   TrendingUp,
   UserCheck,
+  Users,
   UserX
 } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
@@ -30,6 +32,7 @@ interface BorrowersTableProps {
   onEditBorrower?: (borrower: Borrower) => void;
   onDeleteBorrower: (borrowerId: string) => void;
   onAddNewLoan: () => void;
+  onLoadSampleData?: () => void;
 }
 
 type FilterType = 'all' | 'active' | 'completed' | 'overdue';
@@ -40,6 +43,7 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
   onEditBorrower,
   onDeleteBorrower,
   onAddNewLoan,
+  onLoadSampleData,
 }) => {
   const { t, language } = useI18n();
 
@@ -217,14 +221,38 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
       {/* Mobile Card List View (<md) */}
       <div className="block md:hidden space-y-3">
         {filteredList.length === 0 ? (
-          <div className="py-10 text-center text-[#8ba39e] bg-[#041513] rounded-2xl border border-[#10332e] p-4">
-            <p className="font-semibold text-sm mb-1">{t('dashboard.emptyBorrowers')}</p>
-            <button
-              onClick={onAddNewLoan}
-              className="text-xs text-amber-400 hover:underline font-bold cursor-pointer"
-            >
-              + {t('dashboard.addFirstBorrower')}
-            </button>
+          <div className="py-8 text-center text-[#8ba39e] bg-[#041513] rounded-2xl border border-[#10332e] p-5 space-y-3">
+            <div className="w-10 h-10 mx-auto rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <Users className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-bold text-sm text-[#e0e7e6] mb-1">
+                {borrowers.length === 0 ? 'Your Personal Ledger is Ready' : t('dashboard.emptyBorrowers')}
+              </p>
+              <p className="text-[11px] text-[#8ba39e] max-w-xs mx-auto">
+                {borrowers.length === 0
+                  ? 'No borrower loans recorded in this account yet. Add a loan to begin tracking 21-week collections.'
+                  : 'No borrowers match your search or filter.'}
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 pt-1">
+              <button
+                onClick={onAddNewLoan}
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 text-xs font-extrabold flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ {t('dashboard.addFirstBorrower')}</span>
+              </button>
+              {borrowers.length === 0 && onLoadSampleData && (
+                <button
+                  onClick={onLoadSampleData}
+                  className="w-full py-2 rounded-xl bg-[#0a2924] hover:bg-[#10332e] border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Load Sample Records</span>
+                </button>
+              )}
+            </div>
           </div>
         ) : (
           filteredList.map((borrower) => {
@@ -352,13 +380,39 @@ export const BorrowersTable: React.FC<BorrowersTableProps> = ({
             {filteredList.length === 0 ? (
               <tr>
                 <td colSpan={9} className="py-12 text-center text-[#8ba39e]">
-                  <p className="font-semibold text-sm mb-2">{t('dashboard.emptyBorrowers')}</p>
-                  <button
-                    onClick={onAddNewLoan}
-                    className="text-xs text-amber-400 hover:underline font-bold cursor-pointer"
-                  >
-                    + {t('dashboard.addFirstBorrower')}
-                  </button>
+                  <div className="max-w-md mx-auto space-y-3">
+                    <div className="w-12 h-12 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-base text-[#e0e7e6] mb-1">
+                        {borrowers.length === 0 ? 'Your Personal Ledger is Ready' : t('dashboard.emptyBorrowers')}
+                      </p>
+                      <p className="text-xs text-[#8ba39e]">
+                        {borrowers.length === 0
+                          ? 'No borrower loans recorded in this account yet. Click Add Loan to create your first record, or load sample records to test the 21-week calculator.'
+                          : 'No borrowers match your search/filter query.'}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-3 pt-2">
+                      <button
+                        onClick={onAddNewLoan}
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-md hover:scale-105 transition-all cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>+ {t('dashboard.addFirstBorrower')}</span>
+                      </button>
+                      {borrowers.length === 0 && onLoadSampleData && (
+                        <button
+                          onClick={onLoadSampleData}
+                          className="px-3.5 py-2 rounded-xl bg-[#0a2924] hover:bg-[#10332e] border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Load Sample Records</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </td>
               </tr>
             ) : (

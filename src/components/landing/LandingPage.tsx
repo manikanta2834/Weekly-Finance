@@ -47,63 +47,63 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-emerald-600/10 via-amber-500/5 to-transparent blur-3xl pointer-events-none -z-10" />
 
       {/* Hero Section */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 md:py-12 overflow-x-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center">
           
           {/* Left Hero Narrative */}
-          <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold shadow-inner">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>{t('landing.heroBadge')}</span>
+          <div className="lg:col-span-6 space-y-4 sm:space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-[11px] sm:text-xs font-semibold shadow-inner">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">{t('landing.heroBadge')}</span>
             </div>
 
-            <div className="space-y-2">
-              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight text-[#e0e7e6] font-['Plus_Jakarta_Sans'] leading-[1.15]">
+            <div className="space-y-1.5 sm:space-y-2">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-[#e0e7e6] font-['Plus_Jakarta_Sans'] leading-[1.2] break-words">
                 {t('landing.heroTitle1')}{' '}
-                <span className="bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-200 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-200 bg-clip-text text-transparent inline-block">
                   {t('landing.heroTitle2')}
                 </span>
               </h1>
             </div>
 
-            <p className="text-base sm:text-lg text-[#8ba39e] leading-relaxed max-w-xl">
+            <p className="text-sm sm:text-base md:text-lg text-[#8ba39e] leading-relaxed max-w-xl">
               {t('landing.heroDesc')}
             </p>
 
             {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-              <div className="bg-[#061d1a] border border-[#10332e] p-3 rounded-2xl">
-                <span className="text-[11px] text-[#8ba39e] block">{t('landing.statPrincipal')}</span>
-                <span className="text-lg font-bold text-[#e0e7e6]">₹10,000</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-1 sm:pt-2">
+              <div className="bg-[#061d1a] border border-[#10332e] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl min-w-0">
+                <span className="text-[10px] sm:text-[11px] text-[#8ba39e] block truncate">{t('landing.statPrincipal')}</span>
+                <span className="text-base sm:text-lg font-bold text-[#e0e7e6] block truncate">₹10,000</span>
               </div>
-              <div className="bg-[#061d1a] border border-[#10332e] p-3 rounded-2xl">
-                <span className="text-[11px] text-[#8ba39e] block">{t('landing.statReturn')}</span>
-                <span className="text-lg font-bold text-amber-300">₹12,600</span>
+              <div className="bg-[#061d1a] border border-[#10332e] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl min-w-0">
+                <span className="text-[10px] sm:text-[11px] text-[#8ba39e] block truncate">{t('landing.statReturn')}</span>
+                <span className="text-base sm:text-lg font-bold text-amber-300 block truncate">₹12,600</span>
               </div>
-              <div className="bg-[#061d1a] border border-[#10332e] p-3 rounded-2xl">
-                <span className="text-[11px] text-[#8ba39e] block">{t('landing.statProfit')}</span>
-                <span className="text-lg font-bold text-emerald-400">+₹2,600</span>
+              <div className="bg-[#061d1a] border border-[#10332e] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl min-w-0">
+                <span className="text-[10px] sm:text-[11px] text-[#8ba39e] block truncate">{t('landing.statProfit')}</span>
+                <span className="text-base sm:text-lg font-bold text-emerald-400 block truncate">+₹2,600</span>
               </div>
-              <div className="bg-[#061d1a] border border-[#10332e] p-3 rounded-2xl">
-                <span className="text-[11px] text-[#8ba39e] block">{t('landing.statWeeks')}</span>
-                <span className="text-lg font-bold text-amber-200">21 Wks (26%)</span>
+              <div className="bg-[#061d1a] border border-[#10332e] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl min-w-0">
+                <span className="text-[10px] sm:text-[11px] text-[#8ba39e] block truncate">{t('landing.statWeeks')}</span>
+                <span className="text-base sm:text-lg font-bold text-amber-200 block truncate">21 Wks (26%)</span>
               </div>
             </div>
 
             {/* Hero CTAs */}
-            <div className="flex flex-wrap gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-4 pt-2 sm:pt-4">
               <button
                 onClick={onOpenDashboard}
-                className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 font-bold text-base shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2.5 cursor-pointer"
+                className="w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 text-slate-950 font-bold text-sm sm:text-base shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Landmark className="w-5 h-5 text-slate-950" />
+                <Landmark className="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 shrink-0" />
                 <span>{t('landing.exploreDashboard')}</span>
-                <ArrowRight className="w-4 h-4 text-slate-950" />
+                <ArrowRight className="w-4 h-4 text-slate-950 shrink-0" />
               </button>
 
               <button
                 onClick={onOpenAddLoan}
-                className="px-6 py-3.5 rounded-2xl bg-[#041513] hover:bg-[#0a2924] border border-[#10332e] text-[#e0e7e6] font-semibold text-base transition-all flex items-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-[#041513] hover:bg-[#0a2924] border border-[#10332e] text-[#e0e7e6] font-semibold text-sm sm:text-base transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>{t('nav.addLoan')}</span>
               </button>
@@ -111,69 +111,69 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           {/* Right 3D Interactive Stack Scene */}
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-6 w-full min-w-0">
             <Hero3DScene />
           </div>
 
         </div>
 
         {/* Section: The Exact Business Formula (Source of Truth) */}
-        <section className="mt-20 sm:mt-28">
-          <div className="text-center max-w-2xl mx-auto space-y-3 mb-10">
+        <section className="mt-14 sm:mt-24">
+          <div className="text-center max-w-2xl mx-auto space-y-2 sm:space-y-3 mb-6 sm:mb-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-950/60 border border-amber-500/30 text-amber-300 text-xs font-semibold">
               <BookOpen className="w-3.5 h-3.5" />
               <span>{t('landing.formulaHeading')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#e0e7e6]">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-[#e0e7e6]">
               Mathematical Precision Guaranteed
             </h2>
-            <p className="text-[#8ba39e] text-sm sm:text-base">
+            <p className="text-[#8ba39e] text-xs sm:text-base">
               {t('landing.formulaDesc')}
             </p>
           </div>
 
-          <div className="bg-[#061d1a]/95 border border-[#10332e] rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+          <div className="bg-[#061d1a]/95 border border-[#10332e] rounded-2xl sm:rounded-3xl p-4 sm:p-8 backdrop-blur-xl shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 sm:gap-4 items-center">
               
               {/* Box 1: Principal */}
-              <div className="bg-[#041513] border border-[#10332e] rounded-2xl p-4 text-center">
-                <span className="text-xs text-[#8ba39e] font-medium block mb-1">
+              <div className="bg-[#041513] border border-[#10332e] rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center min-w-0">
+                <span className="text-[11px] sm:text-xs text-[#8ba39e] font-medium block mb-1">
                   {t('landing.formulaPrincipal')}
                 </span>
-                <span className="text-2xl font-black text-[#e0e7e6] font-mono">
+                <span className="text-xl sm:text-2xl font-black text-[#e0e7e6] font-mono">
                   {formatINR(calcAmount)}
                 </span>
               </div>
 
               {/* Symbol + */}
-              <div className="text-center text-[#8ba39e] font-bold text-xl hidden md:block">
+              <div className="text-center text-[#8ba39e] font-bold text-lg sm:text-xl hidden md:block">
                 ×
               </div>
 
               {/* Box 2: Weekly x Weeks */}
-              <div className="bg-[#041513] border border-amber-500/30 rounded-2xl p-4 text-center">
-                <span className="text-xs text-amber-300 font-medium block mb-1">
+              <div className="bg-[#041513] border border-amber-500/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center min-w-0">
+                <span className="text-[11px] sm:text-xs text-amber-300 font-medium block mb-1">
                   {t('landing.formulaWeekly')} × {t('landing.formulaWeeks')}
                 </span>
-                <span className="text-2xl font-black text-amber-400 font-mono">
+                <span className="text-xl sm:text-2xl font-black text-amber-400 font-mono">
                   {formatINR(calcWeekly)} × {calcWeeks}
                 </span>
               </div>
 
               {/* Symbol = */}
-              <div className="text-center text-[#8ba39e] font-bold text-xl hidden md:block">
+              <div className="text-center text-[#8ba39e] font-bold text-lg sm:text-xl hidden md:block">
                 =
               </div>
 
               {/* Box 3: Total & Profit */}
-              <div className="bg-emerald-950/60 border border-emerald-500/40 rounded-2xl p-4 text-center">
-                <span className="text-xs text-emerald-300 font-medium block mb-1">
+              <div className="bg-emerald-950/60 border border-emerald-500/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center min-w-0">
+                <span className="text-[11px] sm:text-xs text-emerald-300 font-medium block mb-1">
                   {t('landing.formulaTotal')} & {t('landing.formulaInterest')}
                 </span>
-                <span className="text-2xl font-black text-emerald-300 font-mono">
+                <span className="text-xl sm:text-2xl font-black text-emerald-300 font-mono">
                   {formatINR(preview.totalAmount)}
                 </span>
-                <span className="text-xs text-amber-300 font-semibold block mt-0.5">
+                <span className="text-[11px] sm:text-xs text-amber-300 font-semibold block mt-0.5">
                   (+{formatINR(preview.interestAmount)} / {preview.roiPercentage.toFixed(1)}% ROI)
                 </span>
               </div>
@@ -181,7 +181,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             {/* Interactive Sliders to test formula */}
-            <div className="mt-8 pt-6 border-t border-[#10332e] grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-[#10332e] grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               <div>
                 <label className="text-xs font-semibold text-[#8ba39e] flex justify-between mb-2">
                   <span>{t('borrower.principal')}</span>
